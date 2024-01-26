@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "Linkedin Tracker",
+    "version": "1.0",
+    "background": {
+        "service_worker": "service-worker.js"
+    },
+    "permissions": [
+        "activeTab", "scripting", "tabs"
+    ],
+    "host_permissions": [
+        "https://www.linkedin.com/*"
+    ],
+    "action": {
+        "default_title":"My Networks"
+    },
+    "content_scripts":[
+        {
+            "matches": ["https://www.linkedin.com/*"],
+            "js": ["content-script.js"]
+        }
+    ]
+        
+}
