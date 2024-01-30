@@ -36,34 +36,54 @@ chrome.action.onClicked.addListener(async (tab) => {
 });
 
 
-
-chrome.tabs.onActivated.addListener(async (selection) => {
-
-  let enabled = await chrome.action.isEnabled(selection.tabId)
-
-  console.log("function 2")
-  console.log(selection.tabId)
-  console.log(enabled)
-
-  if (enabled) {
-    chrome.scripting.executeScript({
-      target : {tabId : selection.tabId},
-      files: ["content-script.js"]
-      });
-    
-      chrome.runtime.onMessage.addListener(
-        async function(request, sender, sendResponse) {
-          if (request.type == "network") {
-            console.log(sender.tab ?
-              "from a content script:" + sender.tab.url :
-              "from the extension");
-          }
-          sendResponse();
-        }
-      );
+chrome.tabs.onActivated.addListener(
+  async function(selector) {
+    console.log("tabs.onActivated")
+    let enabled = await chrome.action.isEnabled(selector.tabId)
+    console.log(enabled)
+    console.log(selector.tabId)
+    if (enabled) {
+      chrome.scripting.executeScript({
+        target : {tabId : selector.tabId},
+        files: ["content-script.js"]
+        });
+    }
   }
-  
+);
+
+
+chrome.tabs.onUpdated.addListener(
+  async (tab_id, changeInfo,  tab) => {
+    console.log("tabs.onUpdated")
+    if (tab.url.startsWith(LINKEDIN_URL) && changeInfo.status == "complete") {
+      let enabled = await chrome.action.isEnabled(tab_id)
+
+      console.log(changeInfo.status)
+      console.log("New tab:" + tab.url)
+      console.log("New tab id:" + tab.id)
+      console.log("Extension enabled: " + enabled)
+    
+    }
 });
+
+
+chrome.runtime.onMessage.addListener(
+  async function(request, sender, sendResponse) {
+    console.log("tabs.runtime.onMessage")
+    if (request.type == "network") {
+      console.log("TYPE = " + request.type)
+      console.log("Previous URL = " + sender.url)
+    } else if (request.type == "search") {
+      console.log("TYPE = " + request.type)
+      console.log("Searched Value = " + request.value)
+      console.log("Previous URL = " + sender.url)
+    } else if (request.type == "job search") {
+      console.log("TYPE = " + request.type)
+    }
+    sendResponse();
+    return true
+  }
+);
 
 
 async function getActionBadgeText(tab) {

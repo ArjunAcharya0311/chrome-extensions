@@ -1,5 +1,4 @@
 const network = document.querySelector("#global-nav > div > nav > ul > li:nth-child(2) > a")
-
 network.addEventListener('click', () => {
     const response = chrome.runtime.sendMessage(
         {
@@ -11,16 +10,15 @@ network.addEventListener('click', () => {
 });
 
 
-const search = document.querySelector("#global-nav-search > div > button")
-
-search.addEventListener('keypress', async (e) => {
-    if (e.key == 'Enter') {
+const search_box = document.querySelector("#global-nav-typeahead > input")
+search_box.addEventListener('keydown', (e) => {
+    if (e.keyCode == 13) {
         const response = chrome.runtime.sendMessage(
             {
                 type: "search",
-                class: network.className,
-                url: network.url
+                class: search_box.className,
+                value: search_box.value
             }
         )
     }
-})
+});

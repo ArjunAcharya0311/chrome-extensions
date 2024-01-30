@@ -23,10 +23,10 @@ const updateTip = async () => {
     }
   }
   
-  createAlarm();
+createAlarm();
   
-  // Update tip once a day
-  chrome.alarms.onAlarm.addListener(updateTip);
+// Update tip once a day
+chrome.alarms.onAlarm.addListener(updateTip);
 
   // Send tip to content script via messaging
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
